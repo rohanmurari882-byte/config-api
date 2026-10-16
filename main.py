@@ -83,11 +83,11 @@ def normalize_layer(layer):
     }
 
 
+
 def load_config():
-    # Layer 1: hardcoded defaults
     config = dict(DEFAULTS)
 
-    # Layer 2: environment-specific YAML
+    # Layer 2: YAML
     environment = os.environ.get("APP_ENV", "development")
     yaml_path = Path(f"config.{environment}.yaml")
 
@@ -96,20 +96,19 @@ def load_config():
             yaml_config = yaml.safe_load(file) or {}
         config.update(normalize_layer(yaml_config))
 
-    # Layer 3: .env file
-    dotenv = read_dotenv()
-    config.update(normalize_layer(dotenv))
+    # Layer 3: .env
+    config.update(normalize_layer(read_dotenv()))
 
-    # Layer 4: OS environment variables with APP_ prefix
-    os_config = {}
-    for key, value in os.environ.items():
-        if key.startswith("APP_"):
-            name = key[4:].lower()
-            os_config[name] = value
-
+    # Layer 4: OS environment variables
+    os_config = {
+        key[4:].lower(): value
+        for key, value in os.environ.items()
+        if key.startswith("APP_")
+    }
     config.update(normalize_layer(os_config))
 
     return config
+
 
 
 @app.get("/effective-config")
