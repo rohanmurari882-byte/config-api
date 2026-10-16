@@ -47,6 +47,7 @@ def read_dotenv(path=".env"):
 
 
 
+
 def normalize_key(key):
     key = key.strip().lower()
 
@@ -57,6 +58,7 @@ def normalize_key(key):
         key = "workers"
 
     return key
+
 
 
 
@@ -119,11 +121,12 @@ def effective_config(
 
     # Apply query overrides last, independently on every request.
     for item in overrides:
-        if "=" not in item:
-            continue
+    if "=" not in item:
+        continue
 
-        key, value = item.split("=", 1)
-        key = normalize_key(key)
+    key, value = item.split("=", 1)
+    key = normalize_key(key)
+    config[key] = coerce_value(key, value)
 
         if not key:
             continue
