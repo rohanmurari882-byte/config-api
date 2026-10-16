@@ -1,0 +1,5 @@
+
+workers: 2
+debug: true
+log_level: error
+api_key: key-fso1ugf9a6
